@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/recommendation.schema.json",
+  "title": "RecommendationResult",
+  "type": "object",
+  "required": [
+    "artist_id",
+    "generated_on",
+    "top_recommendations"
+  ],
+  "properties": {
+    "artist_id": {"type": "string"},
+    "generated_on": {"type": "string", "format": "date"},
+    "top_recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rank",
+          "opportunity_id",
+          "title",
+          "organizer",
+          "deadline",
+          "application_fee_usd",
+          "accepted_media",
+          "location",
+          "eligibility",
+          "source_name",
+          "score",
+          "score_breakdown",
+          "fit_summary",
+          "caution_note",
+          "application_url"
+        ],
+        "properties": {
+          "rank": {"type": "integer", "minimum": 1},
+          "opportunity_id": {"type": "string"},
+          "title": {"type": "string"},
+          "organizer": {"type": "string"},
+          "deadline": {"type": "string", "format": "date"},
+          "application_fee_usd": {"type": "number"},
+          "accepted_media": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "location": {"type": "string"},
+          "eligibility": {"type": "object"},
+          "source_name": {"type": "string"},
+          "score": {"type": "number"},
+          "score_breakdown": {"type": "object"},
+          "fit_summary": {"type": "string"},
+          "caution_note": {"type": "string"},
+          "application_url": {"type": "string"}
+        }
+      }
+    }
+  }
+}

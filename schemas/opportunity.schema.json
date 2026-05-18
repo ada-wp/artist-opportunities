@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/opportunity.schema.json",
+  "title": "Opportunity",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "organizer",
+    "source_name",
+    "source_type",
+    "source_url",
+    "confidence_level",
+    "verification_status",
+    "listing_url",
+    "application_url",
+    "deadline",
+    "opportunity_type",
+    "disciplines",
+    "application_fee_usd",
+    "accepted_media",
+    "eligibility",
+    "location",
+    "opportunity_description",
+    "theme_signals",
+    "career_value_signals",
+    "quality_score"
+  ],
+  "properties": {
+    "id": {"type": "string"},
+    "title": {"type": "string"},
+    "organizer": {"type": "string"},
+    "source_name": {"type": "string"},
+    "source_type": {
+      "type": "string",
+      "enum": ["primary_structured", "original_organizer", "discovery_social", "discovery_editorial"]
+    },
+    "source_url": {"type": "string"},
+    "confidence_level": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": ["trusted", "verified", "needs_verification"]
+    },
+    "listing_url": {"type": "string"},
+    "application_url": {"type": "string"},
+    "deadline": {"type": "string", "format": "date"},
+    "opportunity_type": {
+      "type": "string",
+      "enum": ["open_call", "grant", "residency", "fellowship", "other"]
+    },
+    "disciplines": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "application_fee_usd": {"type": "number", "minimum": 0},
+    "accepted_media": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "eligibility": {
+      "type": "object",
+      "required": ["regions", "career_stages"],
+      "properties": {
+        "regions": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "career_stages": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "notes": {"type": "string"}
+      }
+    },
+    "location": {"type": "string"},
+    "opportunity_description": {"type": "string"},
+    "theme_signals": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "career_value_signals": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "notable_restrictions": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "image_reference_urls": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "quality_score": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    }
+  }
+}

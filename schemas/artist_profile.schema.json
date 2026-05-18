@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/artist_profile.schema.json",
+  "title": "ArtistProfile",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "primary_medium",
+    "style_description",
+    "themes",
+    "budget_cap_usd",
+    "minimum_days_until_deadline",
+    "career_goal",
+    "eligible_regions",
+    "career_stage"
+  ],
+  "properties": {
+    "id": {"type": "string"},
+    "name": {"type": "string"},
+    "primary_medium": {"type": "string"},
+    "style_description": {"type": "string"},
+    "themes": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "budget_cap_usd": {"type": "number", "minimum": 0},
+    "minimum_days_until_deadline": {"type": "integer", "minimum": 0},
+    "career_goal": {"type": "string"},
+    "eligible_regions": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "career_stage": {"type": "string"},
+    "geographic_preferences": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "eligibility_constraints": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "artwork_image_paths": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}

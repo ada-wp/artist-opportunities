@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Process new submissions from data/mvp/submissions.csv against data/mvp/opportunities.csv.
+Process research-complete submissions from data/mvp/submissions.csv against
+data/mvp/opportunities.csv.
 
 Rules:
-- only process rows where status=new, processed_at is empty, and primary_medium is non-empty
+- only process rows where status=research_complete, processed_at is empty,
+  and primary_medium is non-empty
 - write/update a row in data/mvp/results.csv
-- stamp processed_at and set status=complete after processing
+- stamp processed_at and set status=emailed_ready after processing
 
 Usage:
   py scripts/process_submissions.py
@@ -36,12 +38,15 @@ RESULT_COLUMNS = [
     "final_pick_1",
     "final_pick_1_why",
     "final_pick_1_caution",
+    "final_pick_1_apply_url",
     "final_pick_2",
     "final_pick_2_why",
     "final_pick_2_caution",
+    "final_pick_2_apply_url",
     "final_pick_3",
     "final_pick_3_why",
     "final_pick_3_caution",
+    "final_pick_3_apply_url",
     "general_suggestions",
     "email_subject",
     "email_body",
@@ -122,12 +127,17 @@ def medium_match(primary_medium: str, accepted_media: str) -> tuple[bool, int]:
         return False, 0
     if medium in haystack:
         return True, 40
+    if any(token in medium for token in ["watercolor", "watercolour", "gouache", "acrylic", "pastel"]):
+        if any(token in haystack for token in ["painting", "mixed media", "all visual arts", "2d", "visual arts"]):
+            return True, 32
     if "oil" in medium and "painting" in haystack:
         return True, 34
     if "painting" in medium and any(token in haystack for token in ["painting", "drawing", "mixed media", "visual arts"]):
         return True, 30
     if "drawing" in medium and any(token in haystack for token in ["drawing", "painting", "visual arts"]):
         return True, 28
+    if any(token in haystack for token in ["all visual arts", "visual arts"]):
+        return True, 20
     return False, 0
 
 
@@ -319,12 +329,15 @@ def process_submission(
         "final_pick_1": top[0].row.get("title", "") if len(top) > 0 else "",
         "final_pick_1_why": top[0].why if len(top) > 0 else "",
         "final_pick_1_caution": top[0].caution if len(top) > 0 else "",
+        "final_pick_1_apply_url": top[0].row.get("application_url", "") if len(top) > 0 else "",
         "final_pick_2": top[1].row.get("title", "") if len(top) > 1 else "",
         "final_pick_2_why": top[1].why if len(top) > 1 else "",
         "final_pick_2_caution": top[1].caution if len(top) > 1 else "",
+        "final_pick_2_apply_url": top[1].row.get("application_url", "") if len(top) > 1 else "",
         "final_pick_3": top[2].row.get("title", "") if len(top) > 2 else "",
         "final_pick_3_why": top[2].why if len(top) > 2 else "",
         "final_pick_3_caution": top[2].caution if len(top) > 2 else "",
+        "final_pick_3_apply_url": top[2].row.get("application_url", "") if len(top) > 2 else "",
         "general_suggestions": (
             "Prioritize the strongest gallery-context option first. Recheck each official page before applying."
         ),
@@ -353,7 +366,7 @@ def main() -> int:
     for submission in submissions:
         if args.only and submission.get("submission_id") != args.only:
             continue
-        if submission.get("status", "").strip().lower() != "new":
+        if submission.get("status", "").strip().lower() != "research_complete":
             continue
         if submission.get("processed_at", "").strip():
             continue
@@ -362,7 +375,7 @@ def main() -> int:
 
         result_row = process_submission(submission, opportunities, today)
         results_by_submission[submission["submission_id"]] = result_row
-        submission["status"] = "complete"
+        submission["status"] = "emailed_ready"
         submission["processed_at"] = datetime.now().isoformat(timespec="seconds")
         picks = [result_row.get("final_pick_1", ""), result_row.get("final_pick_2", ""), result_row.get("final_pick_3", "")]
         picks = [pick for pick in picks if pick]
@@ -382,7 +395,7 @@ def main() -> int:
     write_csv(SUBMISSIONS_CSV, list(submissions[0].keys()) if submissions else [], submissions)
     write_csv(RESULTS_CSV, RESULT_COLUMNS, ordered_results)
 
-    print(f"Processed {processed_count} submission(s).")
+    print(f"Processed {processed_count} research-complete submission(s).")
     return 0
 
 

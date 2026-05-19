@@ -167,6 +167,10 @@ Each processed row now stores:
   - [data/mvp/match_assessments.csv](C:\Users\pweng\Documents\Artist opportunities\data\mvp\match_assessments.csv)
 - recommendation results:
   - [data/mvp/results.csv](C:\Users\pweng\Documents\Artist opportunities\data\mvp\results.csv)
+- follow-up recommendations:
+  - [data/mvp/followup_recommendations.csv](C:\Users\pweng\Documents\Artist opportunities\data\mvp\followup_recommendations.csv)
+- outreach log:
+  - [data/mvp/outreach_log.csv](C:\Users\pweng\Documents\Artist opportunities\data\mvp\outreach_log.csv)
 
 ## Current Email Template
 
@@ -388,6 +392,10 @@ These were ranked based on:
   - [docs/research_pending_workflow.md](C:\Users\pweng\Documents\Artist opportunities\docs\research_pending_workflow.md)
 - daily operating checklist:
   - [docs/daily_checklist.md](C:\Users\pweng\Documents\Artist opportunities\docs\daily_checklist.md)
+- email strategy:
+  - [docs/email_strategy.md](C:\Users\pweng\Documents\Artist opportunities\docs\email_strategy.md)
+- generated research brief files:
+  - [data/mvp/research_briefs](C:\Users\pweng\Documents\Artist opportunities\data\mvp\research_briefs)
 
 ## Current Code State
 
@@ -403,7 +411,79 @@ These were ranked based on:
 - discovery is still the weak link; the practical current model is Codex-assisted live research for `research_pending` rows
 - helper script exists to generate a research brief for one queued submission:
   - [scripts/generate_research_brief.py](C:\Users\pweng\Documents\Artist opportunities\scripts\generate_research_brief.py)
+- one-command operator entry point now exists to sync Mailchimp and generate brief files for all queued rows:
+  - [scripts/sync_mailchimp_and_generate_briefs.py](C:\Users\pweng\Documents\Artist opportunities\scripts\sync_mailchimp_and_generate_briefs.py)
 - the most important product value is now explicitly framed as AI-assisted opportunity review and artist matching, not just fast filtering or email automation
+- two outbound email types are now explicitly tracked:
+  - initial recommendation email
+  - follow-up opportunity email
+- research briefs are persisted as per-submission files in `data/mvp/research_briefs/`
+- `submissions.csv` brief fields are optional convenience metadata only and should not be treated as the canonical record
+
+## Current Working Daily Flow
+
+This is the current practical operator flow that is now working end-to-end before email send:
+
+1. Run:
+   - `py scripts\sync_mailchimp_and_generate_briefs.py --all-with-medium`
+2. This:
+   - syncs Mailchimp into `data/mvp/submissions.csv`
+   - generates per-submission brief files in `data/mvp/research_briefs/`
+3. Use the brief file as the canonical research document.
+4. Codex then performs the real review step:
+   - live source discovery from NYFA, CaFE, and ArtDeadline
+   - official-page verification
+   - organizer review
+   - artist-to-opportunity matching
+   - final top-3 ranking
+5. Write/update:
+   - `data/mvp/research_candidates.csv`
+   - `data/mvp/verification_reviews.csv`
+   - `data/mvp/organizer_reviews.csv`
+   - `data/mvp/match_assessments.csv`
+   - `data/mvp/results.csv`
+6. Mark the submission row:
+   - `status = emailed_ready`
+7. Only after all of that, send in bulk:
+   - `py scripts\send_result_emails.py`
+
+So the current ideal daily operator flow is:
+
+1. sync + generate briefs
+2. have Codex do the research
+3. send bulk emails for `emailed_ready`
+
+## Successful Watercolor Case
+
+The most recent successful full pre-email workflow run was for:
+
+- `TEST WENG`
+- submission id: `mc_adaw-artco-gmail-com`
+- medium: `Watercolor`
+- budget cap: `89`
+- minimum days before deadline: `7`
+- style description: `LANDSCAPE, animal, expressive`
+
+The old cached OPA/Viridian-style result for this row was replaced with a live-reviewed watercolor result and written into the stage CSVs and `results.csv`.
+
+The current final top 3 stored for this artist are:
+
+1. `TRAHC's 38th Annual Juried Exhibition`
+2. `Call for Art- JUST ADD WATER`
+3. `2026 West Texas Watercolor Society Signature Show`
+
+Current stored state for this row:
+
+- `submissions.csv -> status = emailed_ready`
+- `results.csv -> sent_at = blank`
+
+Meaning:
+
+- research is complete
+- the recommendation is stored
+- email has not been sent yet
+
+This is the correct state to reach before running bulk send.
 
 ## Resume Prompt Suggestion
 

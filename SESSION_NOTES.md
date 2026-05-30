@@ -413,6 +413,8 @@ These were ranked based on:
   - [scripts/generate_research_brief.py](C:\Users\pweng\Documents\Artist opportunities\scripts\generate_research_brief.py)
 - one-command operator entry point now exists to sync Mailchimp and generate brief files for all queued rows:
   - [scripts/sync_mailchimp_and_generate_briefs.py](C:\Users\pweng\Documents\Artist opportunities\scripts\sync_mailchimp_and_generate_briefs.py)
+- a local repo skill now exists for this workflow:
+  - [skills/artist-opportunity-review/SKILL.md](C:\Users\pweng\Documents\Artist opportunities\skills\artist-opportunity-review\SKILL.md)
 - the most important product value is now explicitly framed as AI-assisted opportunity review and artist matching, not just fast filtering or email automation
 - two outbound email types are now explicitly tracked:
   - initial recommendation email
